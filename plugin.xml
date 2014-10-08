@@ -6,11 +6,11 @@
     <name>nexpreferences</name>
     <description>Sample PhoneGap Share Preferences Plugin</description>
     <license>MIT</license>
-    <keywords>phonegap,shared preferences, android</keywords>
+    <keywords>phonegap,preferences,android</keywords>
  
  
     <js-module src="www/nexpreferences.js" name="nexpreferences">
-        <clobbers target="plugins.nexpreferences" />
+        <clobbers target="nexpreferences" />
     </js-module>
  
     <!-- android -->
