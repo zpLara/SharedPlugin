@@ -1,0 +1,4 @@
+SharedPlugin
+============
+
+Phonegap Plugins
