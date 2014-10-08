@@ -28,7 +28,7 @@ public class nexpreferences extends CordovaPlugin{
 		JSONObject options = args.getJSONObject (0);
 		String key = options.getString(CONST_KEY);
 		if(action.equals(ACTION_ADD_STORE)){
-			
+			Log.d("nexpreferences", "action=store");
 			return this.store(key, options.getString(CONST_VALUE), callbackContext);
 				
 		}else if(action.equals(ACTION_ADD_FETCH)){
@@ -52,8 +52,11 @@ public class nexpreferences extends CordovaPlugin{
 			//get sharepreference instance of current cordova activity (which is only one)
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
 			Editor editor = sp.edit();
+			Log.d("nexpreferences", "get editor");
 			editor.putString (key, value);
+			Log.d("nexpreferences", "put string");
 			if (editor.commit()) {
+				Log.d("nexpreferences", "commit success");
 				cb.success();
 			} else {
 				try {
@@ -63,6 +66,7 @@ public class nexpreferences extends CordovaPlugin{
 					e.printStackTrace();
 				}
 			}
+			Log.d("nexpreferences", "end store()");
 		}});
 		return true;
 	}

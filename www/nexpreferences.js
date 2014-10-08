@@ -34,4 +34,14 @@ var nexpreferences =  {
         );
     }
 }
-module.exports = nexpreferences;
+
+if(!window.plugins) {
+    window.plugins = {};
+}
+if (!window.plugins.nexpreferences) {
+    window.plugins.nexpreferences = nexpreferences;
+}
+
+if (typeof module != 'undefined' && module.exports) {
+  module.exports = nexpreferences;
+}
