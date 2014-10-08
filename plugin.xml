@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+           id="com.larachao.plugins"
+      version="0.0.1">
+    <name>SharedPlugin</name>
+    <description>Sample PhoneGap Share Preferences Plugin</description>
+    <license>MIT</license>
+    <keywords>phonegap,shared preferences, android</keywords>
+ 
+ 
+    <js-module src="www/nexpreferences.js" name="nexpreferences">
+        <clobbers target="plugins.nexpreferences" />
+    </js-module>
+ 
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="nexpreferences">
+                <param name="android-package" value="com.larachao.plugins"/>
+            </feature>
+        </config-file>
+ 
+        <source-file src="src/android/nexpreferences.java" target-dir="src/com/larachao/plugins" />      
+     </platform>          
+</plugin>
