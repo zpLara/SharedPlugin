@@ -73,8 +73,7 @@ public class nexpreferences extends CordovaPlugin{
 		//let's only store JSON.
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
-			try{
-				JSONArray objArr = new JSONArray();
+			try{				
 				if(sp.contains(key)){					
 					if(sp.getString(key, null) != null){
 						//returnVal
