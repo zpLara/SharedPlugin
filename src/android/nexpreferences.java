@@ -5,11 +5,12 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.util.Log;
+
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class nexpreferences extends CordovaPlugin{
 	public static final String ACTION_ADD_STORE = "store";
@@ -22,13 +23,14 @@ public class nexpreferences extends CordovaPlugin{
 	
 	private static final int COMMIT_FAILED = 2;
 	private static final int FETCH_NOTFOUND = 0;
+	private static final int CODE_ERROR = 3;
 	
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException{
 		JSONObject options = args.getJSONObject (0);
 		String key = options.getString(CONST_KEY);
 		if(action.equals(ACTION_ADD_STORE)){
-			Log.d("nexpreferences", "action=store");
+			Log.d("nexpreferences", "test");
 			return this.store(key, options.getString(CONST_VALUE), callbackContext);
 				
 		}else if(action.equals(ACTION_ADD_FETCH)){
@@ -52,11 +54,8 @@ public class nexpreferences extends CordovaPlugin{
 			//get sharepreference instance of current cordova activity (which is only one)
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
 			Editor editor = sp.edit();
-			Log.d("nexpreferences", "get editor");
 			editor.putString (key, value);
-			Log.d("nexpreferences", "put string");
 			if (editor.commit()) {
-				Log.d("nexpreferences", "commit success");
 				cb.success();
 			} else {
 				try {
@@ -66,7 +65,6 @@ public class nexpreferences extends CordovaPlugin{
 					e.printStackTrace();
 				}
 			}
-			Log.d("nexpreferences", "end store()");
 		}});
 		return true;
 	}
@@ -75,36 +73,46 @@ public class nexpreferences extends CordovaPlugin{
 		//let's only store JSON.
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
-			JSONObject obj = null;
-			if(sp.contains(key)){
-				if(sp.getString(key, null) != null){
-					//returnVal
-					try {
-						obj = new JSONObject(sp.getString(key,null));
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			try{
+				JSONObject obj = new JSONObject();
+				if(sp.contains(key)){
+					if(sp.getString(key, null) != null){
+						//returnVal
+						try {
+							obj = new JSONObject(sp.getString(key,null));
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						cb.success(obj);
+					}else{
+						//error null
+						try {
+							cb.error(createErrorObj(FETCH_NOTFOUND, "sp.key is null"));
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block						
+							e.printStackTrace();
+						}
 					}
-					cb.success(obj);
 				}else{
 					//error null
 					try {
-						cb.error(createErrorObj(FETCH_NOTFOUND, "sp.key is null"));
+						cb.error(createErrorObj(FETCH_NOTFOUND, "sp does not contain key"));
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-			}else{
-				//error null
+			}catch(Exception ex){
+				//error code error
 				try {
-					cb.error(createErrorObj(FETCH_NOTFOUND, "sp does not contain key"));
+					cb.error(createErrorObj(CODE_ERROR, "COde error!?"));
+					ex.printStackTrace();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			
 		}});
 						
 		return true;
