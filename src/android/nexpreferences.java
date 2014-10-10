@@ -75,11 +75,19 @@ public class nexpreferences extends CordovaPlugin{
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
 			try{
 				JSONArray objArr = new JSONArray();
-				if(sp.contains(key)){
+				if(sp.contains(key)){					
 					if(sp.getString(key, null) != null){
 						//returnVal
 						try {
-							objArr = new JSONArray(sp.getString(key,null));
+							String temp = sp.getString(key, null);
+							if(temp.indexOf('{')==0){
+								cb.success(new JSONObject(temp));
+							}else if (temp.indexOf('[') ==0){
+								cb.success(new JSONArray(temp));
+							}else{
+								cb.error(createErrorObj(CODE_ERROR, "unknown storage type"));
+							}
+													
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -106,7 +114,7 @@ public class nexpreferences extends CordovaPlugin{
 			}catch(Exception ex){
 				//error code error
 				try {
-					cb.error(createErrorObj(CODE_ERROR, "COde error!?"));
+					cb.error(createErrorObj(CODE_ERROR, "Synthax error"));
 					ex.printStackTrace();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
