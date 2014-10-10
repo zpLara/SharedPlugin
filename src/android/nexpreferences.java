@@ -74,17 +74,17 @@ public class nexpreferences extends CordovaPlugin{
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
 			try{
-				JSONObject obj = new JSONObject();
+				JSONArray objArr = new JSONArray();
 				if(sp.contains(key)){
 					if(sp.getString(key, null) != null){
 						//returnVal
 						try {
-							obj = new JSONObject(sp.getString(key,null));
+							objArr = new JSONArray(sp.getString(key,null));
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						cb.success(obj);
+						cb.success(objArr);
 					}else{
 						//error null
 						try {
