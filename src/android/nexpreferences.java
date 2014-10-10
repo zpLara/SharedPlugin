@@ -90,8 +90,7 @@ public class nexpreferences extends CordovaPlugin{
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
-						cb.success(objArr);
+						}						
 					}else{
 						//error null
 						try {
