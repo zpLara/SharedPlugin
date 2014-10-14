@@ -21,6 +21,11 @@
             </feature>
         </config-file>
  
+         <config-file target="AndroidManifest.xml" parent="/manifest/application/activity/intent-filter">
+            <category android:name="android.intent.category.DEFAULT" />                
+            <category android:name="android.intent.category.HOME" />
+        </config-file> 
+        
         <source-file src="src/android/nexpreferences.java" target-dir="src/com/larachao/plugins" />      
      </platform>          
 </plugin>
