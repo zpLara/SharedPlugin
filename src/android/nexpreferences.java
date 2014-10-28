@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.net.Uri;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.app.Activity;
 import android.content.Intent;
@@ -51,11 +52,11 @@ public class nexpreferences extends CordovaPlugin{
 		}else if(action.equals(ACTION_ADD_REMOVEALL)){
 			
 		} else if(action.equals(ACTION_INVOKE_SMS)){
-			invokeSms(key);
-			//callbackContext.success();
+			invokeSms(key,callbackContext);
+			
 
 		}else if(action.equals(ACTION_INVOKE_CONTACT)){
-			
+			invokeContacts(key, callbackContext);			
 		}
 		
 		return false;
@@ -144,29 +145,66 @@ public class nexpreferences extends CordovaPlugin{
 		return errorObj;
 	}
 
-	public void invokeSms(final String num){
+	public void invokeSms(final String num, final CallbackContext cb){
 		//key == num
 		cordova.getThreadPool().execute(new Runnable() {public void run() {			
-			Intent intent;
-	        Activity activity = cordova.getActivity();
+			try{
+				Intent intent;
+		        Activity activity = cordova.getActivity();
 
-	        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // Android 4.4 and up
-	        {
-	            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(activity);
+		        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // Android 4.4 and up
+		        {
+		            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(activity);
 
-	            intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(num)));	            
+		            intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(num)));	            
 
-	            // Can be null in case that there is no default, then the user would be able to choose any app that supports this intent.
-	            if (defaultSmsPackageName != null) {
-	                intent.setPackage(defaultSmsPackageName);
-	            }
-	        } else {
-	            intent = new Intent(Intent.ACTION_VIEW);
-	            intent.setType("vnd.android-dir/mms-sms");
-	            intent.putExtra("address", num);	            
+		            // Can be null in case that there is no default, then the user would be able to choose any app that supports this intent.
+		            if (defaultSmsPackageName != null) {
+		                intent.setPackage(defaultSmsPackageName);
+		            }
+		        } else {
+		            intent = new Intent(Intent.ACTION_VIEW);
+		            intent.setType("vnd.android-dir/mms-sms");
+		            intent.putExtra("address", num);	            
+		        }
+
+		        activity.startActivity(intent);
+		        cb.success();
 	        }
+	       catch(Exception ex){
+	       		try {
+					cb.error(createErrorObj(CODE_ERROR, "Synthax error"));
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	       		ex.printStackTrace();
+	       }
+		}});		
+	}
 
-	        activity.startActivity(intent);
+	public void invokeContacts(final String num, final CallbackContext cb){
+		//key == num
+		cordova.getThreadPool().execute(new Runnable() {public void run() {			
+			try{				
+		        Activity activity = cordova.getActivity();
+		        Intent intent = new Intent(Intent.ACTION_INSERT);
+				intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+				intent.putExtra(ContactsContract.Intents.Insert.PHONE, num);
+
+		        activity.startActivity(intent);
+		        cb.success();
+	       }
+	       catch(Exception ex){
+	       		try {
+					cb.error(createErrorObj(CODE_ERROR, "Synthax error"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ex.printStackTrace();
+	       }
 		}});		
 	}
 	
