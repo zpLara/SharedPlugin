@@ -11,7 +11,7 @@ var nexpreferences =  {
             }]
         );
     },
-    fetch: function(key, value, successCallback, errorCallback) {
+    fetch: function(key, successCallback, errorCallback) {
         cordova.exec(
             successCallback, // success callback function
             errorCallback, // error callback function
@@ -45,7 +45,7 @@ var nexpreferences =  {
         }
 
     },
-    invokeContact: function(key){
+    invokeContact: function(key, successCallback, errorCallback){
         cordova.exec{
             successCallback, // success callback function
             errorCallback, // error callback function
