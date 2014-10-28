@@ -6,8 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
+import android.os.Build;
 import android.provider.Telephony;
-import android.telephony.SmsManager;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
@@ -19,7 +22,7 @@ public class nexpreferences extends CordovaPlugin{
 	public static final String ACTION_ADD_REMOVEALL = "removeAll";
 	public static final String ACTION_ADD_REMOVE = "remove";
 	public static final String ACTION_INVOKE_SMS = "sms";
-	public static final String ACTION_INVOKE_CONTACTS = "addContact";
+	public static final String ACTION_INVOKE_CONTACT = "addContact";
 	
 	public static final String CONST_KEY = "key"; //also for NUM
 	public static final String CONST_VALUE = "value";	
@@ -51,7 +54,7 @@ public class nexpreferences extends CordovaPlugin{
 			invokeSms(key);
 			//callbackContext.success();
 
-		}else if(action.equals(ACTION_INVOKE_CONTACTS)){
+		}else if(action.equals(ACTION_INVOKE_CONTACT)){
 			
 		}
 		
@@ -145,14 +148,13 @@ public class nexpreferences extends CordovaPlugin{
 		//key == num
 		cordova.getThreadPool().execute(new Runnable() {public void run() {			
 			Intent intent;
-	        Activity activity = this.cordova.getActivity();
+	        Activity activity = cordova.getActivity();
 
 	        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // Android 4.4 and up
 	        {
 	            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(activity);
 
-	            intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(phoneNumber)));
-	            intent.putExtra("sms_body", message);
+	            intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(num)));	            
 
 	            // Can be null in case that there is no default, then the user would be able to choose any app that supports this intent.
 	            if (defaultSmsPackageName != null) {
