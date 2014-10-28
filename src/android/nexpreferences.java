@@ -6,7 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+import android.provider.Telephony;
+import android.telephony.SmsManager;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
@@ -17,9 +18,11 @@ public class nexpreferences extends CordovaPlugin{
 	public static final String ACTION_ADD_FETCH = "fetch";
 	public static final String ACTION_ADD_REMOVEALL = "removeAll";
 	public static final String ACTION_ADD_REMOVE = "remove";
+	public static final String ACTION_INVOKE_SMS = "sms";
+	public static final String ACTION_INVOKE_CONTACTS = "addContact";
 	
-	public static final String CONST_KEY = "key";
-	public static final String CONST_VALUE = "value";
+	public static final String CONST_KEY = "key"; //also for NUM
+	public static final String CONST_VALUE = "value";	
 	
 	private static final int COMMIT_FAILED = 2;
 	private static final int FETCH_NOTFOUND = 0;
@@ -43,6 +46,12 @@ public class nexpreferences extends CordovaPlugin{
 			return this.store(key, null, callbackContext);
 			
 		}else if(action.equals(ACTION_ADD_REMOVEALL)){
+			
+		} else if(action.equals(ACTION_INVOKE_SMS)){
+			invokeSms(key);
+			//callbackContext.success();
+
+		}else if(action.equals(ACTION_INVOKE_CONTACTS)){
 			
 		}
 		
@@ -130,6 +139,33 @@ public class nexpreferences extends CordovaPlugin{
 		errorObj.put("code", code);
 		errorObj.put("message", message);
 		return errorObj;
+	}
+
+	public void invokeSms(final String num){
+		//key == num
+		cordova.getThreadPool().execute(new Runnable() {public void run() {			
+			Intent intent;
+	        Activity activity = this.cordova.getActivity();
+
+	        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // Android 4.4 and up
+	        {
+	            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(activity);
+
+	            intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(phoneNumber)));
+	            intent.putExtra("sms_body", message);
+
+	            // Can be null in case that there is no default, then the user would be able to choose any app that supports this intent.
+	            if (defaultSmsPackageName != null) {
+	                intent.setPackage(defaultSmsPackageName);
+	            }
+	        } else {
+	            intent = new Intent(Intent.ACTION_VIEW);
+	            intent.setType("vnd.android-dir/mms-sms");
+	            intent.putExtra("address", num);	            
+	        }
+
+	        activity.startActivity(intent);
+		}});		
 	}
 	
 }
