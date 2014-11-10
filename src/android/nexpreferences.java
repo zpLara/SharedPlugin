@@ -9,11 +9,16 @@ import org.json.JSONObject;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.PhoneLookup;
+import android.provider.ContactsContract.Profile;
 import android.provider.Telephony;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -24,18 +29,24 @@ public class nexpreferences extends CordovaPlugin{
 	public static final String ACTION_ADD_REMOVE = "remove";
 	public static final String ACTION_INVOKE_SMS = "sms";
 	public static final String ACTION_INVOKE_CONTACT = "addContact";
+	public static final String ACTION_GET_CONTACT_INFO = "getContactInfo";
+	public static final String ACTION_GET_CONTACT_ALL = "getAllContacts";
 	
 	public static final String CONST_KEY = "key"; //also for NUM
 	public static final String CONST_VALUE = "value";	
+	public static final int SAVE_CONTACT = 1;
 	
 	private static final int COMMIT_FAILED = 2;
 	private static final int FETCH_NOTFOUND = 0;
-	private static final int CODE_ERROR = 3;
+	private static final int CODE_ERROR = 3;	
+
+	public CallbackContext cb = null;
 	
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException{
 		JSONObject options = args.getJSONObject (0);
 		String key = options.getString(CONST_KEY);
+		this.cb = callbackContext;
 		if(action.equals(ACTION_ADD_STORE)){
 			Log.d("nexpreferences", "test");
 			return this.store(key, options.getString(CONST_VALUE), callbackContext);
@@ -52,11 +63,19 @@ public class nexpreferences extends CordovaPlugin{
 		}else if(action.equals(ACTION_ADD_REMOVEALL)){
 			
 		} else if(action.equals(ACTION_INVOKE_SMS)){
-			invokeSms(key,callbackContext);
+			return this.invokeSms(key,callbackContext);
 			
 
 		}else if(action.equals(ACTION_INVOKE_CONTACT)){
-			invokeContacts(key, callbackContext);			
+			return this.invokeContacts(key, options.getString(CONST_VALUE), callbackContext);			
+		}else if(action.equals(ACTION_GET_CONTACT_INFO)){			
+			String[] arrStr = key.split(",");
+			return this.myCallerId(arrStr, callbackContext);
+			/*PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+		    result.setKeepCallback(true);
+		    this.callbackContext.sendPluginResult(result);
+		    return true;*/
+			
 		}
 		
 		return false;
@@ -92,10 +111,22 @@ public class nexpreferences extends CordovaPlugin{
 						//returnVal
 						try {
 							String temp = sp.getString(key, null);
+							//retrieve name?
 							if(temp.indexOf('{')==0){
+								/*JSONObject obj =new ;
+								//for missedcalls only
+								if()
+								obj.put("disp", myCallerId_Internal(obj.getString("num")));
+								Log.d("fetch", "fetchingName for num->" + obj.getString("num") + " name->" + obj.getString("disp"));*/
 								cb.success(new JSONObject(temp));
-							}else if (temp.indexOf('[') ==0){
+							}else if (temp.indexOf('[') ==0){								
+								/*JSONArray arr = new JSONArray(temp);
+								for (int i = 0; i < arr.length(); i++) {																
+									arr.getJSONObject(i).put("disp", myCallerId_Internal(arr.getJSONObject(i).getString("num")));
+									Log.d("fetch", "fetchingName for num->" + arr.getJSONObject(i).getString("num") + " name->" + arr.getJSONObject(i).getString("disp"));
+								}*/
 								cb.success(new JSONArray(temp));
+
 							}else{
 								cb.error(createErrorObj(CODE_ERROR, "unknown storage type"));
 							}
@@ -145,7 +176,7 @@ public class nexpreferences extends CordovaPlugin{
 		return errorObj;
 	}
 
-	public void invokeSms(final String num, final CallbackContext cb){
+	public boolean invokeSms(final String num, final CallbackContext cb){
 		//key == num
 		cordova.getThreadPool().execute(new Runnable() {public void run() {			
 			try{
@@ -179,21 +210,49 @@ public class nexpreferences extends CordovaPlugin{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-	       		ex.printStackTrace();
+				
 	       }
-		}});		
+		}});
+		return true;		
 	}
+	
+	/*@Override
+	public void onActivityResult(int reqCode, int resCode, Intent data){
+		Log.d("onActivityResult", "super called!");
+		super.onActivityResult(reqCode, resCode, data);
+		Log.d("onActivityResult", "cb.success() ActivityCalled!");
+		switch(reqCode){
+			case SAVE_CONTACT:
+				//if (resultCode == RESULT_OK) {
+				this.cb.success();
+				Log.d("onActivityResult", "cb.success() ActivityCalled!");
+				break;
+		}
 
-	public void invokeContacts(final String num, final CallbackContext cb){
+
+	}*/
+
+	public boolean invokeContacts(final String num, final String insert, final CallbackContext cb){
 		//key == num
 		cordova.getThreadPool().execute(new Runnable() {public void run() {			
 			try{				
 		        Activity activity = cordova.getActivity();
-		        Intent intent = new Intent(Intent.ACTION_INSERT);
-				intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+		        String intAction = Intent.ACTION_INSERT;
+		        String contType =ContactsContract.RawContacts.CONTENT_TYPE;
+		        if(!Boolean.parseBoolean(insert)){
+		        	intAction = Intent.ACTION_INSERT_OR_EDIT;
+		        	contType = ContactsContract.RawContacts.CONTENT_ITEM_TYPE;
+		        }
+		        Intent intent = new Intent(intAction);
+				intent.setType(contType);
 				intent.putExtra(ContactsContract.Intents.Insert.PHONE, num);
+				intent.putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, "NexLabs");
 
+		        //close activity after save completed
+		        if (Integer.valueOf(Build.VERSION.SDK_INT) > 14)
+		        	intent.putExtra("finishActivityOnSaveCompleted", true); // only for 4.0.3 onwards
 		        activity.startActivity(intent);
+		        //activity.startActivityForResult(intent, SAVE_CONTACT);
 		        cb.success();
 	       }
 	       catch(Exception ex){
@@ -205,7 +264,53 @@ public class nexpreferences extends CordovaPlugin{
 				}
 				ex.printStackTrace();
 	       }
-		}});		
+		}});			
+		return true;	
+		
 	}
+		
+	public boolean myCallerId(final String[] lstNum, final CallbackContext cb){	
+		cordova.getThreadPool().execute(new Runnable() {public void run() {			
+		try{
+			
+			String res = "";
+			final ContentResolver resolver = cordova.getActivity().getContentResolver();			
+			for(String i : lstNum){
+				if( i.trim() != ""){					
+					Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(i.trim()));
+					//Log.d("myCallerId", "uri for num->"+uri.toString());
+					try{
+						//http://developer.android.com/training/contacts-provider/retrieve-names.html
+						Cursor cr = resolver.query(uri, new String[]{Profile.DISPLAY_NAME_PRIMARY}, null, null, null);						
+						if(cr.moveToFirst()){									
+							Log.d("myCallerId", "num-> " + i + " | cr.getString(0)->" + cr.getString(0));
+							if(res != ""){ res += ",";}
+							res += "{\"num\":\"" + i.trim() + "\", \"name\":\"" + cr.getString(0) + "\"}";														
+						}else{
+							//Log.d("myCallerId", "cr.getString(0) is null");
+						}
+						cr.close();
+					}catch(Exception ex){
+
+					}
+				}
+			}
+			res = "[" + res + "]";			
+			cb.success(res);
+			
+		}catch(Exception ex){
+			try{
+				Log.d("myCallerId", "catch error->" + ex.getMessage());
+				cb.error(createErrorObj(CODE_ERROR, ex.getMessage()));
+			}
+			catch(Exception e){
+				// TODO Auto-generated catch block
+				Log.d("myCallerId", "e error->" + e.getStackTrace());
+				e.printStackTrace();
+			}
+		}
+	}});
+	return true;
+}
 	
 }

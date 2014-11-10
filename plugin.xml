@@ -20,21 +20,10 @@
                 <param name="android-package" value="com.larachao.plugins.nexpreferences"/>
             </feature>
         </config-file>
- 
-         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <activity android:name=".MAIN"
-                  android:label="@string/app_name"
-                  android:screenOrientation="sensorLandscape"
-                  android:hardwareAccelerated="true"
-        >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.HOME" />
-            </intent-filter>
-        </activity>
-        </config-file> 
+                 
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+          <uses-permission android:name="android.permission.READ_CONTACTS" />
+        </config-file>
 
         <source-file src="src/android/nexpreferences.java" target-dir="src/com/larachao/plugins" />      
      </platform>          

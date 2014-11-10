@@ -34,7 +34,7 @@ var nexpreferences =  {
         );
     },
     invokeSMS: function(key,successCallback,errorCallback){
-        cordova.exec{
+        cordova.exec(
             successCallback, // success callback function
             errorCallback, // error callback function
             'nexpreferences', // mapped to our native Java class called "nexpreferences"
@@ -42,20 +42,32 @@ var nexpreferences =  {
             [{                  // and this array of custom arguments to create our entry
                 "key": key
             }]
-        }
+        );
 
     },
-    invokeContact: function(key, successCallback, errorCallback){
-        cordova.exec{
+    invokeContact: function(key, value, successCallback, errorCallback){
+        cordova.exec(
             successCallback, // success callback function
             errorCallback, // error callback function
             'nexpreferences', // mapped to our native Java class called "nexpreferences"
             'addContact', // with this action name
             [{                  // and this array of custom arguments to create our entry
+                "key": key,
+                "value": value
+            }]
+        );
+
+    },
+    getContactInfo:function(key, successCallback, errorCallback){
+        cordova.exec(
+            successCallback, // success callback function
+            errorCallback, // error callback function
+            'nexpreferences', // mapped to our native Java class called "nexpreferences"
+            'getContactInfo', // with this action name
+            [{                  // and this array of custom arguments to create our entry
                 "key": key
             }]
-        }
-
+        );
     }
 }
 
