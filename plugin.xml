@@ -2,7 +2,7 @@
  
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="com.larachao.plugins"
-      version="0.0.1">
+      version="0.0.2">
     <name>nexpreferences</name>
     <description>Sample PhoneGap Share Preferences Plugin</description>
     <license>MIT</license>
