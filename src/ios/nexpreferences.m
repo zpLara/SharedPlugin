@@ -24,14 +24,14 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"nexpreferences-remove: resultsent");
 }
-- (void)invokeSMS:(CDVInvokedUrlCommand*)command{
+- (void)sms:(CDVInvokedUrlCommand*)command{
 	NSLog(@"nexpreferences-invokeSMS");
     //CDVPluginResult* pluginResult= [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"plugin-invokeSMS :)"];
     CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 	NSLog(@"nexpreferences-invokeSMS: resultsent");
 }
-- (void)invokeContact:(CDVInvokedUrlCommand*)command{
+- (void)addContact:(CDVInvokedUrlCommand*)command{
 	NSLog(@"nexpreferences-invokeContact");
     CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

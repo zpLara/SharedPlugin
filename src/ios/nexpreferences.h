@@ -13,8 +13,8 @@
 -(void)store:(CDVInvokedUrlCommand*)command;
 -(void)fetch:(CDVInvokedUrlCommand*)command;
 -(void)remove:(CDVInvokedUrlCommand*)command;
--(void)invokeSMS:(CDVInvokedUrlCommand*)command;
--(void)invokeContact:(CDVInvokedUrlCommand*)command;
+-(void)sms:(CDVInvokedUrlCommand*)command;
+-(void)addContact:(CDVInvokedUrlCommand*)command;
 -(void)getContactInfo:(CDVInvokedUrlCommand*)command;
 @end
 
