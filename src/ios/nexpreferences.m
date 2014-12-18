@@ -43,5 +43,11 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"nexpreferences-getContactInfo: resultsent");
 }
+- (void)getPhoneModel:(CDVInvokedUrlCommand*)command{
+	NSLog(@"nexpreferences-getPhoneModel");
+    CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@"nexpreferences-getPhoneModel: resultsent");
+}
 
 @end

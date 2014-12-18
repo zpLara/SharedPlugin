@@ -17,5 +17,6 @@
 -(void)sms:(CDVInvokedUrlCommand*)command;
 -(void)addContact:(CDVInvokedUrlCommand*)command;
 -(void)getContactInfo:(CDVInvokedUrlCommand*)command;
+-(void)getPhoneModel:(CDVInvokedUrlCommand*)command;
 @end
 
