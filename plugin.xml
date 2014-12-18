@@ -26,5 +26,18 @@
         </config-file>
 
         <source-file src="src/android/nexpreferences.java" target-dir="src/com/larachao/plugins" />      
-     </platform>          
+     </platform>    
+     <!-- ios -->
+     <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="nexpreferences">
+                <param name="ios-package" value="nexpreferences" />
+            </feature>
+        </config-file>
+        <js-module src="www/nexpreferences.js" name="nexpreferences">
+            <clobbers target="nexpreferences" />
+        </js-module>
+        <header-file src="src/ios/nexpreferences.h" />
+        <source-file src="src/ios/nexpreferences.m" />
+     </platform>      
 </plugin>
