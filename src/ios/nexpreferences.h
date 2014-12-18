@@ -10,11 +10,11 @@
 
 @interface nexpreferences : CDVPlugin
 
--(void)store:(CDVInvokeUrlCommand*)command;
--(void)fetch:(CDVInvokeUrlCommand*)command;
--(void)remove:(CDVInvokeUrlCommand*)command;
--(void)invokeSMS:(CDVInvokeUrlCommand*)command;
--(void)invokeContact:(CDVInvokeUrlCommand*)command;
--(void)getContactInfo:(CDVInvokeUrlCommand*)command;
+-(void)store:(CDVInvokedUrlCommand*)command;
+-(void)fetch:(CDVInvokedUrlCommand*)command;
+-(void)remove:(CDVInvokedUrlCommand*)command;
+-(void)invokeSMS:(CDVInvokedUrlCommand*)command;
+-(void)invokeContact:(CDVInvokedUrlCommand*)command;
+-(void)getContactInfo:(CDVInvokedUrlCommand*)command;
 @end
 

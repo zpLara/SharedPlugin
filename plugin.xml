@@ -6,7 +6,8 @@
     <name>nexpreferences</name>
     <description>Sample PhoneGap Share Preferences Plugin</description>
     <license>MIT</license>
-    <keywords>phonegap,preferences,android</keywords>
+    
+    <keywords>phonegap,preferences,android,ios</keywords>
  
  
     <js-module src="www/nexpreferences.js" name="nexpreferences">
