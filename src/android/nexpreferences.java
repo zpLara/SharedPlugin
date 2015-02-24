@@ -222,7 +222,7 @@ public class nexpreferences extends CordovaPlugin{
 	        callIntent.setData(Uri.parse("tel:" + num));
 	        activity.startActivity(callIntent);
 	        
-        }catch (Exception e){
+        }catch (Exception ex){
             try {
 				cb.error(createErrorObj(CODE_ERROR, "Dialing, call failed"));
 				
