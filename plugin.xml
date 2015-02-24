@@ -24,6 +24,7 @@
                  
         <config-file target="AndroidManifest.xml" parent="/manifest">
           <uses-permission android:name="android.permission.READ_CONTACTS" />
+          <uses-permission android:name="android.permission.CALL_PHONE" />
         </config-file>
 
         <source-file src="src/android/nexpreferences.java" target-dir="src/com/larachao/plugins" />      

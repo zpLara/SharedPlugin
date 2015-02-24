@@ -31,6 +31,8 @@ public class nexpreferences extends CordovaPlugin{
 	public static final String ACTION_INVOKE_CONTACT = "addContact";
 	public static final String ACTION_GET_CONTACT_INFO = "getContactInfo";
 	public static final String ACTION_GET_CONTACT_ALL = "getAllContacts";
+	public static final String ACTION_GET_MODEL = "getPhoneModel";
+	public static final String ACTION_INVOKE_CALL = "call";
 	
 	public static final String CONST_KEY = "key"; //also for NUM
 	public static final String CONST_VALUE = "value";	
@@ -76,18 +78,53 @@ public class nexpreferences extends CordovaPlugin{
 		    this.callbackContext.sendPluginResult(result);
 		    return true;*/
 			
+		}else if(action.equals(ACTION_GET_MODEL)){
+			return getDeviceName(callbackContext);
+		}else if(action.equals(ACTION_INVOKE_CALL)){
+			return this.invokeCall(key,callbackContext);
 		}
 		
 		return false;
 	}
 	
+	private boolean getDeviceName(final CallbackContext cb){
+		try{
+			String manufacturer = Build.MANUFACTURER;
+			String model = Build.MODEL;
+			if (model.startsWith(manufacturer)) {
+				cb.success(new JSONObject().put("model", model));//capitalize(model));
+			} else {
+				cb.success(new JSONObject().put("model", manufacturer + " " + model));//capitalize(manufacturer) + " " + model);
+			}
+		}catch(Exception ex){
+			/*try{
+				cb.error(createErrorObj(CODE_ERROR,ex.getMessage()));
+			}catch(JSONException jex){
+				jex.printStackTrace();
+			}*/
+			ex.printStackTrace();
+		}
+		return true;
+	}
+	/*private String capitalize(String s) {
+	  if (s == null || s.length() == 0) {
+	    return "";
+	  }
+	  char first = s.charAt(0);
+	  if (Character.isUpperCase(first)) {
+	    return s;
+	  } else {
+	    return Character.toUpperCase(first) + s.substring(1);
+	  }
+	} */
+
 	public boolean store(final String key ,final String value,final CallbackContext cb){
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
 			//get sharepreference instance of current cordova activity (which is only one)
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
 			Editor editor = sp.edit();
 			editor.putString (key, value);
-			if (editor.commit()) {
+			if (editor.commit()) {				
 				cb.success();
 			} else {
 				try {
@@ -128,7 +165,8 @@ public class nexpreferences extends CordovaPlugin{
 								cb.success(new JSONArray(temp));
 
 							}else{
-								cb.error(createErrorObj(CODE_ERROR, "unknown storage type"));
+								cb.success(temp);//allow flag storing
+								//cb.error(createErrorObj(CODE_ERROR, "unknown storage type"));
 							}
 													
 						} catch (JSONException e) {
@@ -172,8 +210,27 @@ public class nexpreferences extends CordovaPlugin{
 	private JSONObject createErrorObj(int code, String message) throws JSONException {
 		JSONObject errorObj = new JSONObject();
 		errorObj.put("code", code);
-		errorObj.put("message", message);
+		errorObj.put("err", message);
 		return errorObj;
+	}
+
+	//test 24Feb15 - not implemeneting (bad use case)
+	public boolean invokeCall(final String num, final CallbackContext cb){
+		try {
+	        final Intent callIntent = new Intent(Intent.ACTION_CALL);
+	        Activity activity = cordova.getActivity();
+	        callIntent.setData(Uri.parse("tel:" + num));
+	        activity.startActivity(callIntent);
+	        
+        }catch (Exception e){
+            try {
+				cb.error(createErrorObj(CODE_ERROR, "Dialing, call failed"));
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
 	}
 
 	public boolean invokeSms(final String num, final CallbackContext cb){
@@ -216,21 +273,6 @@ public class nexpreferences extends CordovaPlugin{
 		return true;		
 	}
 	
-	/*@Override
-	public void onActivityResult(int reqCode, int resCode, Intent data){
-		Log.d("onActivityResult", "super called!");
-		super.onActivityResult(reqCode, resCode, data);
-		Log.d("onActivityResult", "cb.success() ActivityCalled!");
-		switch(reqCode){
-			case SAVE_CONTACT:
-				//if (resultCode == RESULT_OK) {
-				this.cb.success();
-				Log.d("onActivityResult", "cb.success() ActivityCalled!");
-				break;
-		}
-
-
-	}*/
 
 	public boolean invokeContacts(final String num, final String insert, final CallbackContext cb){
 		//key == num

@@ -61,6 +61,22 @@ var nexpreferences =  {
         }
 
     },
+    invokeCall: function(key,successCallback,errorCallback){
+        try{
+            cordova.exec(
+                successCallback, // success callback function
+                errorCallback, // error callback function
+                'nexpreferences', // mapped to our native Java class called "nexpreferences"
+                'call', // with this action name
+                [{                  // and this array of custom arguments to create our entry
+                    "key": key
+                }]
+            );
+        }catch(err){
+            errorCallback('plugins not initialized: nexpreferences::invokeCall()');
+        }
+
+    },
     invokeContact: function(key, value, successCallback, errorCallback){
         try{
             cordova.exec(
