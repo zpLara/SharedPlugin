@@ -6,8 +6,8 @@
 //
 //
 
-
-#import <Cordova/CDVPlugin.h>
+#import <Foundation/Foundation.h>
+#import <Cordova/CDV.h>
 
 @interface nexpreferences : CDVPlugin
 
