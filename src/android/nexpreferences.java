@@ -225,12 +225,15 @@ public class nexpreferences extends CordovaPlugin{
         }catch (Exception ex){
             try {
 				cb.error(createErrorObj(CODE_ERROR, "Dialing, call failed"));
+				return false;
 				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return false;
 			}
         }
+        return true;
 	}
 
 	public boolean invokeSms(final String num, final CallbackContext cb){
