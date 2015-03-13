@@ -6,14 +6,14 @@
 - (void)store:(CDVInvokedUrlCommand*)command{
     NSLog(@"nexpreferences-store");
     __block CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-    
+    NSLog(@"in Store @ nexpreferences");
     //get params
     NSDictionary* options=[[command arguments] objectAtIndex:0];
     if(!options){
         //catching error
         pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"store params not found"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-         NSLog(@"nexpreferences-store: resultsent");
+        NSLog(@"nexpreferences-store: resultsent");
     }else{
         
         //print params;
@@ -34,7 +34,7 @@
                 NSLog(@"nexpreferences-store: exception");
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[e reason]];
             }@finally{
-                 NSLog(@"nexpreferences-store: resultsent");
+                NSLog(@"nexpreferences-store: resultsent");
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 //print stored values
                 NSUserDefaults *defaults_stored = [NSUserDefaults standardUserDefaults];
@@ -45,26 +45,35 @@
     }
     
     
-   
+    
 }
 
 
 - (void)fetch:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-fetch");
+    NSLog(@"nexpreferences-fetch");
     //CDVPluginResult* pluginResult= [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"plugin-fetch :)"];
-        //print params;
+    //print params;
     CDVPluginResult* pluginResult=nil;
     @try{
         //get params
         NSDictionary* options=[[command arguments] objectAtIndex:0];
         NSString *key = [options objectForKey:@"key"];
         NSUserDefaults *defaults =[NSUserDefaults standardUserDefaults];
+        
+        
+        
+        //debug: i stored an array instead, so i needa remove it
+        //[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"com.nexlabs.missedcalls"];
         NSString *fetched_value = [defaults objectForKey:key];
-        if(!fetched_value){
-        NSLog(@"nexpreference-fetch.success:: key is %@, value is %@",key, fetched_value);
-        pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: fetched_value];
+        
+        if(fetched_value!=(id)[NSNull null]){
+            
+            NSLog(@"nexpreference-fetch.success:: key is %@, value is %@",key, fetched_value);
+            
+            pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: fetched_value];
+            
         }else{
-            NSLog(@"nexpreference-fetch.failed:: key not found");
+            NSLog(@"nexpreference-fetch.failed:: key-> %@, value-> %@, not found",key, fetched_value);
             pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"sp.key is null"];
         }
     }
@@ -77,35 +86,35 @@
         
         NSLog(@"nexpreferences-fetch: resultsent");
     }
-
+    
 }
 - (void)remove:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-remove");
+    NSLog(@"nexpreferences-remove");
     //CDVPluginResult* pluginResult= [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"plugin-remove :)"];
     CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"nexpreferences-remove: resultsent");
 }
 - (void)sms:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-invokeSMS");
+    NSLog(@"nexpreferences-invokeSMS");
     //CDVPluginResult* pluginResult= [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"plugin-invokeSMS :)"];
     CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-	NSLog(@"nexpreferences-invokeSMS: resultsent");
+    NSLog(@"nexpreferences-invokeSMS: resultsent");
 }
 - (void)addContact:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-invokeContact");
+    NSLog(@"nexpreferences-invokeContact");
     CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 - (void)getContactInfo:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-getContactInfo");
-    CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    NSLog(@"nexpreferences-getContactInfo");
+    CDVPluginResult* pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"nexpreferences-getContactInfo: resultsent");
 }
 - (void)getPhoneModel:(CDVInvokedUrlCommand*)command{
-	NSLog(@"nexpreferences-getPhoneModel");
+    NSLog(@"nexpreferences-getPhoneModel");
     NSDictionary *jsonObj = [NSDictionary dictionaryWithObject:[[UIDevice currentDevice] model] forKey:@"model"];
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:&error];
@@ -115,5 +124,12 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"nexpreferences-getPhoneModel: resultsent");
 }
-
+- (void)appendMe:(CDVInvokedUrlCommand*)command{
+    //Purpose (For Debug): to test appending json obj to json obj/arr
+    //get existing
+    //existing->json/dictionary/array
+    //append to existing depending on appSetting
+    
+    
+}
 @end
